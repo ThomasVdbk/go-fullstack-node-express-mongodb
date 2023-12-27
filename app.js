@@ -10,6 +10,10 @@ const app = express();
 
 // middleware general car pas de route URL
 app.use((req, res, next) => {
+    //Ces headers permettent :
+//accéder à notre API depuis n'importe quelle origine ( '*' ) ;
+//ajouter les headers mentionnés aux requêtes envoyées vers notre API (Origin , X-Requested-With , etc.) ;
+//envoyer des requêtes avec les méthodes mentionnées ( GET ,POST , etc.).
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
