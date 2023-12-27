@@ -8,8 +8,19 @@ const app = express();
 
 // ***** Parametrage middleware avec next qui renvoie au prochain middleware *******
 
+// middleware intercepte toutes les requetes contenant du json pour le mettre a dispo de req.body via app.post
+app.use(express.json());
+
+// middleware qui envoi vers la bdd
+app.post('/api/stuff', (req, res, next) => {
+    console.log(req.body);
+    res.status(201).json({
+      message: 'Objet créé !'
+    });
+  });
+
 // middleware general car pas de route URL
-app.use((req, res, next) => {
+app.get((req, res, next) => {
     //Ces headers permettent :
 //accéder à notre API depuis n'importe quelle origine ( '*' ) ;
 //ajouter les headers mentionnés aux requêtes envoyées vers notre API (Origin , X-Requested-With , etc.) ;
