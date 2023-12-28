@@ -6,6 +6,9 @@ const express = require('express');
 const app = express();
 // Import mongoose
 const mongoose = require('mongoose');
+// Import schema donnée
+const Thing = require('./models/Thing');
+
 
 mongoose.connect('mongodb+srv://JohnMcClane:dieHard@cluster0.mwtizxt.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
@@ -16,16 +19,25 @@ mongoose.connect('mongodb+srv://JohnMcClane:dieHard@cluster0.mwtizxt.mongodb.net
   
 // ***** Parametrage middleware avec next qui renvoie au prochain middleware *******
 
+
 // middleware intercepte toutes les requetes contenant du json pour le mettre a dispo de req.body via app.post
 app.use(express.json());
 
-// middleware qui envoi vers la bdd
+
+// middleware qui envoi vers la bdd en utilisant le schema Thing
 app.post('/api/stuff', (req, res, next) => {
-    console.log(req.body);
-    res.status(201).json({
-      message: 'Objet créé !'
-    });
+  // suppression du champ id genere par mongodb
+  delete req.body._id;
+  // creation d'un nouveau Thing en copiant le corp de la request avec spread
+  const thing = new Thing({
+    ...req.body
   });
+  // enregistement du thing cree dans la bdd avec Promise (renvoyé par save())
+  thing.save()
+    .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
+    .catch(error => res.status(400).json({ error }));
+});
+
 
 // middleware general car pas de route URL
 app.get((req, res, next) => {
@@ -38,6 +50,7 @@ app.get((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
   });
+
 
 // avec URL demander par le front
 app.use('/api/stuff', (req, res, next) => {
