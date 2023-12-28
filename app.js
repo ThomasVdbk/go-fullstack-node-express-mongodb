@@ -2,10 +2,18 @@
 
 // Import express
 const express = require('express');
-
 // Creation const express
 const app = express();
+// Import mongoose
+const mongoose = require('mongoose');
 
+mongoose.connect('mongodb+srv://JohnMcClane:dieHard@cluster0.mwtizxt.mongodb.net/?retryWrites=true&w=majority',
+  { useNewUrlParser: true,
+    useUnifiedTopology: true })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+  
 // ***** Parametrage middleware avec next qui renvoie au prochain middleware *******
 
 // middleware intercepte toutes les requetes contenant du json pour le mettre a dispo de req.body via app.post
