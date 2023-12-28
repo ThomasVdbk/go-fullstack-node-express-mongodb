@@ -15,10 +15,21 @@ mongoose.connect('mongodb+srv://JohnMcClane:dieHard@cluster0.mwtizxt.mongodb.net
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
-
   
-// ***** Parametrage middleware avec next qui renvoie au prochain middleware *******
-
+  
+  // ***** Parametrage middleware avec next qui renvoie au prochain middleware *******
+  
+  // middleware general car pas de route URL
+  app.use((req, res, next) => {
+      //Ces headers permettent :
+  //accéder à notre API depuis n'importe quelle origine ( '*' ) ;
+  //ajouter les headers mentionnés aux requêtes envoyées vers notre API (Origin , X-Requested-With , etc.) ;
+  //envoyer des requêtes avec les méthodes mentionnées ( GET ,POST , etc.).
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+      next();
+    });
 
 // middleware intercepte toutes les requetes contenant du json pour le mettre a dispo de req.body via app.post
 app.use(express.json());
@@ -39,21 +50,10 @@ app.post('/api/stuff', (req, res, next) => {
 });
 
 
-// middleware general car pas de route URL
-app.get((req, res, next) => {
-    //Ces headers permettent :
-//accéder à notre API depuis n'importe quelle origine ( '*' ) ;
-//ajouter les headers mentionnés aux requêtes envoyées vers notre API (Origin , X-Requested-With , etc.) ;
-//envoyer des requêtes avec les méthodes mentionnées ( GET ,POST , etc.).
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    next();
-  });
 
 
 // avec URL demander par le front pour lecture bdd
-app.use('/api/stuff', (req, res, next) => {
+app.get('/api/stuff', (req, res, next) => {
   Thing.find()
     .then(things => res.status(200).json(things))
     .catch(error => res.status(400).json({ error }));
